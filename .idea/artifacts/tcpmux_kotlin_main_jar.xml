@@ -1,0 +1,43 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="tcpmux-kotlin.main:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/tcpmux_kotlin_main_jar</output-path>
+    <root id="archive" name="tcpmux-kotlin.main_jar.jar">
+      <element id="module-output" name="tcpmux-kotlin.main" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-socks/4.1.112.Final/9aed7e78c467d06a47a45b5b27466380a6427e2f/netty-codec-socks-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-handler-proxy/4.1.112.Final/b23c87a85451b3b0e7c3e8e89698cea6831a8418/netty-handler-proxy-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.112.Final/2b9e0281fb173da0d7a97797f10775407c33c2e9/netty-transport-native-epoll-4.1.112.Final-linux-riscv64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-dns/4.1.112.Final/6724b184ee870ecc4d8fc36931beeb3c387b0ee/netty-codec-dns-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec/4.1.112.Final/c87f2ec3d9a97bd2b793d16817abb2bab93a7fc3/netty-codec-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver-dns/4.1.112.Final/375872f1c16bb51aac016ff6ee4f5d28b1288d4d/netty-resolver-dns-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.112.Final/a58b80fd8e2d593d37f44faf7dbdcf7bb75fb66d/netty-transport-native-epoll-4.1.112.Final-linux-aarch_64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-stomp/4.1.112.Final/fad240a20f9f731ab76d55c8a1800376ab4e6452/netty-codec-stomp-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-rxtx/4.1.112.Final/575a881d3c338a92ffb1660d311e236cb0e1c8fb/netty-transport-rxtx-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-memcache/4.1.112.Final/16ac3a931897c8d685a248fcda4c5190dcc7d480/netty-codec-memcache-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver/4.1.112.Final/58a631d9d44c4ed7cc0dcc9cffa6641da9374d72/netty-resolver-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.1.112.Final/bdc12df04bb6858890b8aa108060b5b365a26102/netty-buffer-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-sctp/4.1.112.Final/ea1679c9fbe55f9db5120ea658b5d086ed11e8dd/netty-transport-sctp-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver-dns-native-macos/4.1.112.Final/fc3f2e7d05a2b975545896ef0a0a87edfc4a4633/netty-resolver-dns-native-macos-4.1.112.Final-osx-aarch_64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-http/4.1.112.Final/81af1040bfa977f98dd0e1bd9639513ea862ca04/netty-codec-http-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-redis/4.1.112.Final/e3467f6bb45d0331cda937c0b46ef79b78e159de/netty-codec-redis-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver-dns-classes-macos/4.1.112.Final/6dc3e7a029636ef56175c407c453d20b64e15fb6/netty-resolver-dns-classes-macos-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-kqueue/4.1.112.Final/d1d1fe291c6812a4460a6015669a8a0517476a62/netty-transport-native-kqueue-4.1.112.Final-osx-x86_64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-all/4.1.112.Final/d6b2e543749a86957777a46cf68aaa337cc558cb/netty-all-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-smtp/4.1.112.Final/75851dbda637c9499153980f0b7182c260fe8207/netty-codec-smtp-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-classes-kqueue/4.1.112.Final/c3dffba44e055e3b26df6ab0373a95cc869aa1a5/netty-transport-classes-kqueue-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-udt/4.1.112.Final/26da072b67983b0841642764c39d677b3b609733/netty-transport-udt-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-haproxy/4.1.112.Final/71fef69e11023144dd136b1a26a546e8e67e4f31/netty-codec-haproxy-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-classes-epoll/4.1.112.Final/67e590356eb53c20aaabd67f61ae66f628e62e3d/netty-transport-classes-epoll-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-mqtt/4.1.112.Final/84b4d60de75a06983724d1593633be012feb8b37/netty-codec-mqtt-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-http2/4.1.112.Final/7fa28b510f0f16f4d5d7188b86bef59e048f62f9/netty-codec-http2-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.112.Final/b2798069092a981a832b7510d0462ee9efb7a80e/netty-common-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec-xml/4.1.112.Final/a12b05ca7ce58255074bda3d38deeaab0f3ceb8b/netty-codec-xml-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.112.Final/caed6f2ae7aebcef50098a64f55918cb8550d2d0/netty-transport-native-epoll-4.1.112.Final-linux-x86_64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver-dns-native-macos/4.1.112.Final/5abc86fd98561f7bda897efa29bd96483f86f560/netty-resolver-dns-native-macos-4.1.112.Final-osx-x86_64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport/4.1.112.Final/77cd136dd3843f5e7cbcf68c824975d745c49ddb/netty-transport-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-unix-common/4.1.112.Final/b50ff619cdcdc48e748cba3405c9988529f28f60/netty-transport-native-unix-common-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-handler/4.1.112.Final/3d5e2d5bcc6baeeb8c13a230980c6132a778e036/netty-handler-4.1.112.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-kqueue/4.1.112.Final/6486df8bd85ffb2c4af05ae5ae614644c169a599/netty-transport-native-kqueue-4.1.112.Final-osx-aarch_64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-handler-ssl-ocsp/4.1.112.Final/8b6f4656ef8ef113b52f211dbc67daebc20a58f1/netty-handler-ssl-ocsp-4.1.112.Final.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

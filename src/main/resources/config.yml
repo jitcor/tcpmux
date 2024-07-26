@@ -1,0 +1,25 @@
+port: 55280
+tcpRules:
+  - pattern: AB CD ?? 12 7? 89 ?8
+    targetHost: 127.0.0.1
+    targetPort: 5002
+  - pattern: 78 12 45 a8 90
+    targetHost: 127.0.0.1
+    targetPort: 5003
+  - pattern: 00 00 00 00
+    targetHost: 127.0.0.1
+    targetPort: 5001
+
+httpRules:
+  - pattern: /mock
+    targetHost: 127.0.0.1
+    targetPort: 5005
+    path: /anything
+  - pattern: /getid
+    targetHost: httpbin.org
+    targetPort: 80
+    path: /anything
+  - pattern: /
+    targetHost: 127.0.0.1
+    targetPort: 5007
+    path: /home/admin
