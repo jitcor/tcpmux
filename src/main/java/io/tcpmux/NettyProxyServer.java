@@ -178,7 +178,7 @@ class PatternMatcher {
     }
 
     private static PatternMask parseRule(String rule) {
-        String[] tokens = rule.split(" ");
+        String[] tokens = rule.split("\\s+");
         List<Byte> patternList = new ArrayList<>();
         List<Byte> maskList = new ArrayList<>();
 
