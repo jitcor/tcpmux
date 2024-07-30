@@ -1,11 +1,15 @@
 port: 55280
+logEnable: true
+#logPath: %java.io.tmpdir%/tcpmux.log
+tcpBinTest: true
+tcpBinTestPort: 55281
 tcpRules:
   - pattern: AB CD ?? 12 7? 89 ?8
-    targetHost: 127.0.0.1
-    targetPort: 5002
+    targetHost: 34.230.40.69
+    targetPort: 30000
   - pattern: 78 12 45 a8 90
-    targetHost: 127.0.0.1
-    targetPort: 5003
+    targetHost: 34.230.40.69
+    targetPort: 30001
   - pattern: 00 00 00 00
     targetHost: 127.0.0.1
     targetPort: 5001

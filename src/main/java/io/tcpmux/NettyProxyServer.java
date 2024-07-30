@@ -1,5 +1,6 @@
 package io.tcpmux;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -9,23 +10,26 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * config.yml default
+ * port: 55280
  * tcpRules:
  *   - pattern: AB CD ?? 12 7? 89 ?8
  *     targetHost: 127.0.0.1
@@ -54,18 +58,43 @@ import java.util.function.Consumer;
 
 public class NettyProxyServer {
     private static final Logger logger = LoggerFactory.getLogger(NettyProxyServer.class);
+    private EchoServer echoServer;
 
     public static void main(String[] args) {
         String configPath = args.length > 0 ? args[0] : ""; // 使用外部传入的路径或默认路径
         new NettyProxyServer(configPath).start();
     }
 
-    private Config config;
+    private final Config config;
 
     public NettyProxyServer(String configPath) {
         this.config = configPath.isEmpty() ? loadConfigInternal() : loadConfig(configPath);
+        logger.info("logPath:{}", this.config.logPath);
+        if (this.config.logEnable) {
+            try {
+                Common.setupConsoleLog(this.config.logPath);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (config.tcpBinTest) {
+            echoServer = new EchoServer(config.tcpBinTestPort);
+            new Thread(() -> {
+                try {
+                    echoServer.start();
+                    logger.info("tcpBinTest start...Port:{}", config.tcpBinTestPort);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+        }
         if(!configPath.isEmpty()){
-            new Thread(() -> new ConfigWatcher().watchConfigFile(Paths.get(configPath), this::updateConfig)).start();
+            logger.info("configPath:{}", Paths.get(configPath));
+            try {
+                new ConfigFileMonitor(Paths.get(new File(configPath).getAbsolutePath()), 5000, this).start();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -115,41 +144,147 @@ public class NettyProxyServer {
         }
     }
 
-    private void updateConfig(Config newConfig) {
-        this.config = newConfig;
+    void updateConfig(Config newConfig) {
+        if (newConfig.logEnable != config.logEnable) {
+            if (newConfig.logEnable) {
+                try {
+                    Common.setupConsoleLog(newConfig.logPath);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                Common.restoreOriginalStreams();
+            }
+        }
+
+        if (newConfig.tcpBinTest != config.tcpBinTest) {
+            if (newConfig.tcpBinTest) {
+                echoServer = new EchoServer(newConfig.tcpBinTestPort);
+                new Thread(() -> {
+                    try {
+                        echoServer.start();
+                        logger.info("tcpBinTest start...Port:{}", config.tcpBinTestPort);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
+            } else {
+                if (echoServer != null) {
+                    echoServer.shutdown();
+                }
+            }
+        }
+        this.config.copyFrom(newConfig);
+
         logger.info("Configuration updated");
     }
 
     public static class Config {
         public int port; // 端口配置
+        public boolean logEnable = true;
+        public String logPath = System.getProperty("java.io.tmpdir") + "/tcpmux.log";
+        public boolean tcpBinTest = false;
+        public int tcpBinTestPort = 55281;
         public List<Map<String, Object>> tcpRules;
         public List<Map<String, Object>> httpRules;
+
+        public void copyFrom(Config config) {
+            this.port = config.port;
+            this.logEnable = config.logEnable;
+            this.logPath = config.logPath;
+            this.tcpRules = config.tcpRules;
+            this.httpRules = config.httpRules;
+        }
     }
 }
 
 class ConfigWatcher {
     private static final Logger logger = LoggerFactory.getLogger(ConfigWatcher.class);
 
+    private static long sLastModifyTime = 0;
+
+
     public void watchConfigFile(Path path, Consumer<NettyProxyServer.Config> configConsumer) {
         try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
             path.getParent().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
             while (true) {
                 WatchKey key = watchService.take();
+                if (key == null) {
+                    break;
+                }
                 for (WatchEvent<?> event : key.pollEvents()) {
                     Path changed = (Path) event.context();
-                    if (changed.endsWith(path.getFileName())) {
+                    long lastModified = path.toFile().lastModified();
+                    logger.info("file: {},sLastModifyTime:{}", path.getFileName(), sLastModifyTime);
+                    if (changed.endsWith(path.getFileName()) && lastModified != sLastModifyTime && path.toFile().length() > 0) {
                         logger.info("Config file changed: " + changed);
-                        NettyProxyServer.Config newConfig = NettyProxyServer.loadConfig(path.toString());
-                        configConsumer.accept(newConfig);
+                        sLastModifyTime = lastModified;
+//                        NettyProxyServer.Config newConfig = NettyProxyServer.loadConfig(path.toString());
+//                        configConsumer.accept(newConfig);
                     }
                 }
-                key.reset();
+//                boolean valid=key.reset();
+//                if (!valid) {
+//                    logger.error("Config file changed, but not valid");
+//                }
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (Throwable e) {
+            e.printStackTrace();
             logger.error("Error watching config file", e);
+            System.out.printf("error: %s%n", e.getMessage());
+        } finally {
+            logger.error("watchService is stopping");
+            watchConfigFile(path, configConsumer);
         }
     }
+
+    public static void main(String[] args) {
+//        new Thread(() -> new ConfigWatcher().watchConfigFile(Paths.get(new File("").getAbsolutePath()), this::updateConfig)).start();
+    }
 }
+
+
+class ConfigFileMonitor {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigFileMonitor.class);
+    private final FileAlterationMonitor monitor;
+
+    public ConfigFileMonitor(Path configFile, long pollingInterval, NettyProxyServer server) {
+        // 创建观察器
+        FileAlterationObserver observer = new FileAlterationObserver(configFile.getParent().toFile());
+
+        // 配置文件监听器
+        observer.addListener(new FileAlterationListenerAdaptor() {
+            @Override
+            public void onFileChange(File file) {
+                logger.info("onFileChange: " + file);
+                if (file.getName().equals(configFile.getFileName().toString())) {
+                    logger.info("Configuration file changed: {}", file.getName());
+                    try {
+                        // 重新加载配置
+                        server.updateConfig(NettyProxyServer.loadConfig(file.getAbsolutePath()));
+                    } catch (Exception e) {
+                        logger.error("Error reloading configuration: {}", e.getMessage());
+                    }
+                }
+            }
+        });
+
+        // 创建并配置监控器
+        monitor = new FileAlterationMonitor(pollingInterval, observer);
+    }
+
+    public void start() throws Exception {
+        monitor.start(); // 开始监控
+        logger.info("Started configuration file monitor.");
+    }
+
+    public void stop() throws Exception {
+        monitor.stop(); // 停止监控
+        logger.info("Stopped configuration file monitor.");
+    }
+
+}
+
 
 class PatternMatcher {
     private final byte[] pattern;
@@ -473,10 +608,177 @@ class TcpRelayHandler extends SimpleChannelInboundHandler<ByteBuf> {
     }
 }
 
+class EchoServer {
+    private final int port;
+    private Channel serverChannel;
+    private EventLoopGroup group;
+
+    public EchoServer(int port) {
+        this.port = port;
+    }
+
+    public void start() throws Exception {
+        group = new NioEventLoopGroup();
+        try {
+            ServerBootstrap b = new ServerBootstrap();
+            b.group(group)
+                    .channel(NioServerSocketChannel.class)
+                    .localAddress(port)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        public void initChannel(SocketChannel ch) throws Exception {
+                            ch.pipeline().addLast(new EchoServerHandler());
+                        }
+                    });
+
+            ChannelFuture f = b.bind().sync(); // 绑定服务器
+            serverChannel = f.channel();
+            serverChannel.closeFuture().sync(); // 阻塞当前线程，直到服务器关闭
+        } finally {
+            shutdown();
+        }
+    }
+
+    public void shutdown() {
+        if (serverChannel != null) {
+            serverChannel.close();
+        }
+        if (group != null) {
+            try {
+                group.shutdownGracefully().sync();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        if (args.length != 1) {
+            System.err.println("Usage: " + EchoServer.class.getSimpleName() + " <port>");
+            return;
+        }
+        int port = Integer.parseInt(args[0]);
+        new EchoServer(port).start();
+    }
+}
+
+
+class EchoServerHandler extends ChannelInboundHandlerAdapter {
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        ByteBuf in = (ByteBuf) msg;
+        try {
+            byte[] dataBytes;
+            int length = in.readableBytes();
+            if (in.hasArray()) {
+                dataBytes = in.array();
+            } else {
+                dataBytes = new byte[length];
+                in.getBytes(in.readerIndex(), dataBytes);
+            }
+
+            String received = new String(dataBytes, CharsetUtil.UTF_8);
+            String hexData = bytesToHex(dataBytes); // 转换字节到十六进制字符串
+            Map<String, Object> response = new HashMap<>();
+            response.put("client-ip", ctx.channel().remoteAddress().toString());
+            response.put("data", hexData);
+            response.put("text-data", received);
+            response.put("size", length);
+
+            String jsonResponse = mapper.writeValueAsString(response);
+            ByteBuf responseBuf = ctx.alloc().buffer();
+            responseBuf.writeBytes(jsonResponse.getBytes(CharsetUtil.UTF_8));
+            ctx.write(responseBuf);
+            ctx.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            in.release();
+        }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
+        ctx.close();
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x ", b));
+        }
+        return sb.toString().trim(); // 用空格隔开每个十六进制数
+    }
+}
+
 class Common {
     public static void closeOnFlush(Channel ch) {
         if (ch.isActive()) {
             ch.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
         }
     }
+
+    private static PrintStream originalOut;
+    private static PrintStream originalErr;
+    private static PrintStream filePrintStream; // 引用文件流，以便可以关闭它
+
+    public synchronized static void setupConsoleLog(String logFilePath) throws FileNotFoundException {
+        if (filePrintStream != null) return;
+        // 保存原始的控制台输出流
+        originalOut = System.out;
+        originalErr = System.err;
+
+        // 设置文件输出流
+        FileOutputStream fos = new FileOutputStream(logFilePath, true);
+        filePrintStream = new PrintStream(fos);
+
+        // 创建一个新的PrintStream，用于写入文件和控制台
+        PrintStream dualPrintStream = new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                originalOut.write(b);  // 假设所有输出都通过System.out复制
+                filePrintStream.write(b);
+            }
+
+            @Override
+            public void write(byte[] b, int off, int len) {
+                originalOut.write(b, off, len); // 假设所有输出都通过System.out复制
+                filePrintStream.write(b, off, len);
+            }
+
+            @Override
+            public void flush() {
+                originalOut.flush();
+                originalErr.flush();
+                filePrintStream.flush();
+            }
+
+            @Override
+            public void close() {
+                originalOut.close();
+                originalErr.close();
+                filePrintStream.close();
+            }
+        });
+
+        // 重新设置标准输出和错误输出
+        System.setOut(dualPrintStream);
+        System.setErr(dualPrintStream);
+    }
+
+    public synchronized static void restoreOriginalStreams() {
+        // 关闭当前的PrintStream
+        System.out.flush();
+        System.err.flush();
+        System.setOut(originalOut);
+        System.setErr(originalErr);
+        filePrintStream.close(); // 关闭文件输出流
+        filePrintStream = null;
+        originalErr = null;
+        originalOut = null;
+    }
+
 }

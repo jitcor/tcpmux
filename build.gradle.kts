@@ -15,7 +15,9 @@ dependencies {
     implementation("io.netty:netty-all:4.1.112.Final")
     implementation("org.yaml:snakeyaml:2.2")
     implementation("org.slf4j:slf4j-api:1.7.30")
-    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
+    implementation("ch.qos.logback:logback-classic:1.4.12")
+    implementation("commons-io:commons-io:2.11.0")
 }
 
 tasks.test {
